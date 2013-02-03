@@ -21,6 +21,10 @@ type Stack struct {
 	len int
 }
 
+func (stack *Stack) Top() interface{} {
+  return stack.top.Value
+}
+
 func (stack *Stack) Pop() interface{} {
 	topElement := stack.top
 	stack.top = topElement.Next
