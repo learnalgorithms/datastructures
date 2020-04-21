@@ -68,8 +68,8 @@ func TestBuildMaxHeap(t *testing.T) {
 	test := []int{4, 1, 3, 2, 16, 9, 10, 14, 8, 7}
 	heap := []int{16, 14, 10, 8, 7, 9, 3, 2, 4, 1}
 	var a Heap
-	a.New(test...)
-	a.BuildMaxHeap()
+	a.New(true, test...)
+	a.BuildHeap()
 
 	if a.GetArrayLength() != 10 {
 		t.Errorf("BuildMaxHeap failed, expected array length 10, got %d", a.GetArrayLength())

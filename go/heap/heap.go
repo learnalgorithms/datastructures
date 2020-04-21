@@ -12,9 +12,11 @@ var (
 type Heap struct {
 	array []int
 	size  int
+	isMax bool
 }
 
-func (obj *Heap) New(array ...int) {
+func (obj *Heap) New(isMax bool, array ...int) {
+	obj.isMax = isMax
 	if len(array) > 0 {
 		obj.array = array
 	} else {
@@ -67,42 +69,54 @@ func (obj *Heap) Right(i int) int {
 	return (i << 1) + 2
 }
 
-func (a *Heap) MaxHeapify(i int) {
+func (a *Heap) Heapify(i int) {
 	var largest int
 
 	l := a.Left(i)
 	r := a.Right(i)
 
-	if l <= a.GetSize()-1 && a.At(l) > a.At(i) {
-		largest = l
-	} else {
-		largest = i
-	}
+	if a.isMax {
+		if l <= a.GetSize()-1 && a.At(l) > a.At(i) {
+			largest = l
+		} else {
+			largest = i
+		}
 
-	if r <= a.GetSize()-1 && a.At(r) > a.At(largest) {
-		largest = r
+		if r <= a.GetSize()-1 && a.At(r) > a.At(largest) {
+			largest = r
+		}
+	} else {
+		if l <= a.GetSize()-1 && a.At(l) < a.At(i) {
+			largest = l
+		} else {
+			largest = i
+		}
+
+		if r <= a.GetSize()-1 && a.At(r) < a.At(largest) {
+			largest = r
+		}
 	}
 
 	if largest != i {
 		tmp := a.At(i)
 		a.Set(a.At(largest), i)
 		a.Set(tmp, largest)
-		a.MaxHeapify(largest)
+		a.Heapify(largest)
 	}
 }
 
-func (a *Heap) BuildMaxHeap() {
+func (a *Heap) BuildHeap() {
 	a.SetSize(a.GetArrayLength())
 	for i := a.GetArrayLength() / 2; i >= 0; i-- {
-		a.MaxHeapify(i)
+		a.Heapify(i)
 	}
 }
 
-func (a *Heap) Maximum() int {
+func (a *Heap) RootNode() int {
 	return a.At(0)
 }
 
-func (a *Heap) ExtractMax() (max int, err error) {
+func (a *Heap) ExtractRoot() (max int, err error) {
 	if a.GetSize() < 1 {
 		err = errors.New("Heap Underflow")
 		return
@@ -110,14 +124,20 @@ func (a *Heap) ExtractMax() (max int, err error) {
 		max = a.At(0)
 		a.Set(a.At(a.GetSize()), 0)
 		a.SetSize(a.GetSize() - 1)
-		a.MaxHeapify(0)
+		a.Heapify(0)
 		return
 	}
 }
 
 func (a *Heap) IncreaseKey(i int, key int) (err error) {
-	if key < a.At(i) {
-		return errors.New("New key is smaller than the current key")
+	if a.isMax {
+		if key < a.At(i) {
+			return errors.New("New key is smaller than the current key")
+		}
+	} else {
+		if key > a.At(i) {
+			return errors.New("New key is bigger than the current key")
+		}
 	}
 
 	a.Set(key, i)
