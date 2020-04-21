@@ -5,10 +5,6 @@ import (
 	"math"
 )
 
-var (
-	heap Heap
-)
-
 type Heap struct {
 	array []int
 	size  int
